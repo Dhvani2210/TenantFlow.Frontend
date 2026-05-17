@@ -1,122 +1,84 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState } from "react";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [isDark, setIsDark] = useState(() => {
+    // This function runs exactly once — at first render, before anything paints.
+    // We read the user's saved preference from localStorage.
+    const saved = localStorage.getItem("theme");
+    const prefersDark = saved === "dark"; // boolean evaluation 
+
+    // Apply the class to <html> right now, so the page starts
+    // in the correct mode without any flash of the wrong theme.
+    if (prefersDark) {
+      document.documentElement.classList.add("dark");
+    }
+
+    // Whatever we return here becomes the initial value of isDark.
+    return prefersDark;
+  });
+
+  const toggleDark = () => {
+    const newIsDark = !isDark;
+
+    // Update the DOM
+    document.documentElement.classList.toggle("dark", newIsDark);
+
+    // Persist the choice so the next page load remembers it
+    localStorage.setItem("theme", newIsDark ? "dark" : "light");
+
+    // Update React state so the button label re-renders
+    setIsDark(newIsDark);
+  };
+
+  const projects = [
+    { id: 1, name: "TenantFlow API", status: "In Progress", tasks: 12 },
+    { id: 2, name: "Auth Service", status: "Review", tasks: 5 },
+    { id: 3, name: "Frontend Shell", status: "In Progress", tasks: 8 },
+    { id: 4, name: "CI/CD Pipeline", status: "Done", tasks: 3 },
+    { id: 5, name: "Database Schema", status: "Done", tasks: 7 },
+    { id: 6, name: "SignalR Hub", status: "Planned", tasks: 0 },
+  ];
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6 transition-colors duration-300">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+          TenantFlow — Projects
+        </h1>
         <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
+          onClick={toggleDark}
+          className="px-4 py-2 rounded-lg text-sm font-medium
+                     bg-gray-200 dark:bg-gray-700
+                     text-gray-700 dark:text-gray-200
+                     transition-colors duration-300"
         >
-          Count is {count}
+          {isDark ? "Light mode" : "Dark mode"}
         </button>
-      </section>
+      </div>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {projects.map((project) => (
+          <div
+            key={project.id}
+            className="bg-white dark:bg-gray-800
+                       border border-gray-200 dark:border-gray-700
+                       rounded-xl p-5
+                       transition-colors duration-300"
+          >
+            <h2 className="text-base font-medium text-gray-900 dark:text-white">
+              {project.name}
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              {project.status}
+            </p>
+            <p className="text-sm text-gray-400 dark:text-gray-500 mt-3">
+              {project.tasks} tasks
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
-export default App
+export default App;
