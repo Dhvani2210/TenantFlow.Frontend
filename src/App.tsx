@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ProjectBoardPage from "./pages/ProjectBoardPage";
 
 export default function App() {
   return (
@@ -13,6 +14,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route 
+          path="/projects/:projectId"
+          element={
+            <ProtectedRoute>
+              <ProjectBoardPage  />
             </ProtectedRoute>
           }
         />
