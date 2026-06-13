@@ -1,6 +1,6 @@
 import type {Task} from "../types/task";
 import {useEffect, useState} from "react";
-import type { TaskStatus, UpdateTaskRequest } from "../types/task";
+import type { TaskStatus } from "../types/task";
 import type { User } from "../types/user";
 import { getUsers } from "../api/users";
 import { updateTask } from "../api/tasks";
@@ -21,11 +21,11 @@ export default function EditTaskModal({
     const[error, setError] = useState<string | null>(null);
     const[name, setName] = useState(task.name);
     const[description, setDescription] = useState(task.description ?? "");
-const [dueDate, setDueDate] = useState(task.dueDate?.split("T")[0] ?? "");    
-const[assignedToUserId, setAssignedToUserId] = useState(task.assignedToUserId ?? "");
+    const [dueDate, setDueDate] = useState(task.dueDate?.split("T")[0] ?? "");    
+    const[assignedToUserId, setAssignedToUserId] = useState(task.assignedToUserId ?? "");
     const[isSubmitting, setIsSubmitting] = useState(false);
-     const [users, setUsers] = useState<User[]>([]);
-     const[status, setStatus] = useState<TaskStatus>(task.status);
+    const [users, setUsers] = useState<User[]>([]);
+    const[status, setStatus] = useState<TaskStatus>(task.status);
 
     useEffect(() => {
         setName(task.name);

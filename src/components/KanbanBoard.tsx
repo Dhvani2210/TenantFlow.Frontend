@@ -8,26 +8,28 @@ import type {
 import { createTask, updateTask } from "../api/tasks";
 import CreateTaskModal from "./CreateTaskModal";
 import EditTaskModal from "./EditTaskModal";
+import TaskDetailModal from "./TaskDetailModal";
 
 interface KanbanBoardProps {
   tasks: Task[];
   projectId: string;
   onTaskCreated: (task: Task) => void;
   onTaskUpdated: (task: Task) => void;
+  onTaskDeleted: (taskId: string) => void;
 }
 
 interface TaskCardProps {
   task: Task;
-  onEdit: () => void;
   onStatusChange: (newStatus: TaskStatus) => void;
+  onView: () => void;
 }
 
-function TaskCard({ task, onEdit, onStatusChange }: TaskCardProps) {
+function TaskCard({ task, onStatusChange, onView }: TaskCardProps) {
   return (
     <div
       className="bg-white dark:bg-gray-700 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-600 
     hover:shadow-md transition-shadow cursor-pointer"
-      onClick={onEdit}
+      onClick={()=>onView()}
     >
       <p className="font-medium text-sm text-gray-900 dark:text-white">
         {task.name}
@@ -65,9 +67,11 @@ export default function KanbanBoard({
   projectId,
   onTaskCreated,
   onTaskUpdated,
+  onTaskDeleted
 }: KanbanBoardProps) {
   const [modalStatus, setModalStatus] = useState<TaskStatus | null>(null);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [viewingTask, setViewingTask] = useState<Task | null>(null);
 
   const todoTasks = tasks.filter((t) => t.status === "Todo");
   const inProgressTasks = tasks.filter((t) => t.status === "InProgress");
@@ -148,7 +152,7 @@ export default function KanbanBoard({
                 <TaskCard
                   key={task.taskId}
                   task={task}
-                  onEdit={() => setEditingTask(task)}
+                  onView={() => setViewingTask(task)}
                   onStatusChange={(newStatus) =>
                     handleStatusChange(task, newStatus)
                   }
@@ -174,6 +178,16 @@ export default function KanbanBoard({
           projectId={projectId}
           onClose={() => setEditingTask(null)}
           onTaskUpdated={onTaskUpdated}
+        />
+      )}
+
+      {viewingTask && (
+        <TaskDetailModal
+          task={viewingTask}
+          projectId={projectId}
+          onClose={() => setViewingTask(null)}
+          onEdit={() => { setViewingTask(null); setEditingTask(viewingTask); }}
+          onDeleted={onTaskDeleted}
         />
       )}
     </div>
