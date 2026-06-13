@@ -15,3 +15,7 @@ export async function updateTask(projectId: string,taskId: string, data: UpdateT
     const response = await apiClient.put<Task>(`api/projects/${projectId}/tasks/${taskId}`, data);
     return response.data;
 }
+
+export async function deleteTask(projectId: string, taskId: string) : Promise<void>{
+    await apiClient.delete<void>(`api/projects/${projectId}/tasks/${taskId}`);
+}
