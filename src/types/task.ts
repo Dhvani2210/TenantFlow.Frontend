@@ -12,3 +12,12 @@ export interface Task {
   updatedAt: string | null;
   status: TaskStatus;
 }
+
+export interface CreateTaskRequest {
+    name: string;
+    description?: string;
+    projectId: string;
+    status: TaskStatus;
+    dueDate?: string;
+    assignedToUserId?: string;
+}
