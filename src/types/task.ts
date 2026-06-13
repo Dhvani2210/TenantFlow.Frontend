@@ -21,3 +21,11 @@ export interface CreateTaskRequest {
     dueDate?: string;
     assignedToUserId?: string;
 }
+
+export interface UpdateTaskRequest {
+  name?: string;
+  description?: string;
+  dueDate?: string;
+  assignedToUserId?: string;
+  status: TaskStatus;
+}
