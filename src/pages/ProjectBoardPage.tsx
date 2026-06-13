@@ -26,9 +26,7 @@ export default function ProjectBoardPage() {
   },[projectId]);
     
 
-    const todoTasks = tasks.filter(t => t.status === "Todo");
-    const inProgressTasks = tasks.filter(t => t.status === "InProgress");
-    const doneTasks = tasks.filter(t => t.status === "Done");
+    
 
     if (isLoading) {
         return (
@@ -55,16 +53,19 @@ export default function ProjectBoardPage() {
 function handleTaskCreated(newTask: Task) {
     setTasks(prev => [...prev, newTask]);
 }
+
+function handleTaskUpdated(updatedTask: Task) {
+    setTasks(prev => prev.map(t => t.taskId === updatedTask.taskId ? updatedTask : t));
+}
     return (
         <div className="min-h-screen bg-white dark:bg-gray-950">
             <Navbar />
            
             <KanbanBoard
-                todoTasks={todoTasks}
-                inProgressTasks={inProgressTasks}
-                doneTasks={doneTasks}
+                tasks={tasks}
                 projectId={projectId!}
                 onTaskCreated={handleTaskCreated}
+                onTaskUpdated={handleTaskUpdated}
             />
         </div>
     );
