@@ -54,7 +54,7 @@ export default function EditTaskModal({
                 dueDate: dueDate || undefined,
                 assignedToUserId: assignedToUserId || undefined,
             });
-            onTaskUpdated(updatedTask);
+            //onTaskUpdated(updatedTask);
             onClose();
         } catch {
             setError("Failed to update task. Please try again.");

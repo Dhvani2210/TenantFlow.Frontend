@@ -31,7 +31,7 @@ export default function TaskDetailModal({
 
     try {
       await deleteTask(projectId, task.taskId);
-      onDeleted(task.taskId);
+      //onDeleted(task.taskId);
       onClose();
     } catch {
       setError("Failed to delete task. Please try again.");
@@ -57,7 +57,7 @@ return (
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xl leading-none flex-shrink-0"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xl leading-none shrink-0"
           >
             ×
           </button>

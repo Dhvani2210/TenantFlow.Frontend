@@ -4,6 +4,8 @@ import type { Task } from "../types/task";
 import { getTasksByProject } from "../api/tasks";
 import KanbanBoard from "../components/KanbanBoard";
 import Navbar from "../components/Navbar";
+import { useAuth } from "../context/AuthContext";
+import { useTaskHub } from "../hooks/useTaskHub";
 
 export default function ProjectBoardPage() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -11,7 +13,9 @@ export default function ProjectBoardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const { token } = useAuth();
+
+  useEffect(() => {   
     if (!projectId) return;
 
     setIsLoading(true);
@@ -22,6 +26,14 @@ export default function ProjectBoardPage() {
       .catch(() => setError("Failed to load tasks. Please try again."))
       .finally(() => setIsLoading(false));
   }, [projectId]);
+
+
+  useTaskHub(token, {
+  onTaskCreated: handleTaskCreated,
+  onTaskUpdated: handleTaskUpdated,
+  onTaskDeleted: handleTaskDeleted,
+});
+
 
   function handleTaskCreated(newTask: Task) {
     setTasks((prev) => [...prev, newTask]);
