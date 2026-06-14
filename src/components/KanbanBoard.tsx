@@ -103,7 +103,7 @@ export default function KanbanBoard({
 
   async function handleSubmit(data: CreateTaskRequest) {
     const newTask = await createTask(data);
-    onTaskCreated(newTask);
+    //onTaskCreated(newTask);
   }
 
   async function handleStatusChange(task: Task, newStatus: TaskStatus) {

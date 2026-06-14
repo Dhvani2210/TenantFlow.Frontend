@@ -9,7 +9,7 @@ type AuthAction =
 
 // The shape of state managed by the reducer.
 // Separate from AuthState because AuthState includes the functions too.
-interface AuthReducerState {
+  interface AuthReducerState {
   user: AuthUser | null;
   token: string | null;
 }
