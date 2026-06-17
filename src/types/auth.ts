@@ -6,6 +6,8 @@ export interface DecodedToken {
   TenantId: string;
   sub: string;       // user ID (standard JWT claim)
   exp: number;       // expiry as Unix timestamp (standard JWT claim)
+  FullName: string;
+  email: string;
 }
 
 // The clean, usable representation of the logged-in user.
@@ -14,6 +16,8 @@ export interface AuthUser {
   userId: string;
   tenantId: string;
   role: string;
+  fullName: string;
+  email: string;
 }
 
 // The full shape of what AuthContext exposes to the app.

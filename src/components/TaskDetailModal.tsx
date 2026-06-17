@@ -1,6 +1,8 @@
 import { deleteTask } from "../api/tasks";
 import type { Task } from "../types/task";
 import { useState } from "react";
+import ConfirmDialog from "./ConfirmDialog";
+import { useAuth } from "../context/AuthContext";
 
 interface TaskDetailModalProps {
   task: Task | null;
@@ -19,13 +21,18 @@ export default function TaskDetailModal({
 }: TaskDetailModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  
+  const { user } = useAuth();
+  const canDelete = user?.role === "Admin" || user?.role === "Manager";
+
 
   if (task == null) return null;
-
+  function handleDeleteClick() {
+    setShowConfirm(true);
+  }
   async function handleDelete() {
     if (!task) return;
-    if (!window.confirm("Are you sure you want to delete this task?")) return;
-
     setIsDeleting(true);
     setError(null);
 
@@ -40,8 +47,7 @@ export default function TaskDetailModal({
     }
   }
 
-
-return (
+  return (
     <div
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
       onClick={onClose}
@@ -68,35 +74,47 @@ return (
         {/* Fields */}
         <div className="flex flex-col gap-4">
           <div>
-            <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">Description</p>
+            <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">
+              Description
+            </p>
             <p className="text-sm text-gray-700 dark:text-gray-300">
               {task.description ?? "No description"}
             </p>
           </div>
 
           <div>
-            <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">Status</p>
+            <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">
+              Status
+            </p>
             <span className="inline-block text-xs font-medium px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
               {task.status}
             </span>
           </div>
 
           <div>
-            <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">Assigned To</p>
+            <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">
+              Assigned To
+            </p>
             <p className="text-sm text-gray-700 dark:text-gray-300">
-              {task.assignedToUserId ?? "Not assigned"}
+              {task.assignedToUserName ?? "Not assigned"}
             </p>
           </div>
 
           <div>
-            <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">Due Date</p>
+            <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">
+              Due Date
+            </p>
             <p className="text-sm text-gray-700 dark:text-gray-300">
-              {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : "No due date"}
+              {task.dueDate
+                ? new Date(task.dueDate).toLocaleDateString()
+                : "No due date"}
             </p>
           </div>
 
           <div>
-            <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">Created At</p>
+            <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">
+              Created At
+            </p>
             <p className="text-sm text-gray-700 dark:text-gray-300">
               {new Date(task.createdAt).toLocaleDateString()}
             </p>
@@ -111,17 +129,24 @@ return (
           >
             Edit
           </button>
+          {canDelete && (
           <button
-            onClick={handleDelete}
+            onClick={handleDeleteClick}
             disabled={isDeleting}
             className="px-4 py-2 text-sm bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white rounded-lg transition-colors"
           >
             {isDeleting ? "Deleting..." : "Delete Task"}
           </button>
+          )}
         </div>
       </div>
+      <ConfirmDialog
+        isOpen={showConfirm}
+        message={`Are you sure you want to delete "${task?.name}"?`}
+        onConfirm={handleDelete}
+        onCancel={() => setShowConfirm(false)}
+        isLoading={isDeleting}
+      />
     </div>
   );
-
-
 }

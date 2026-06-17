@@ -49,6 +49,8 @@ function decodeToken(token: string): AuthUser {
     userId: decoded.sub,
     tenantId: decoded.TenantId,
     role: decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
+    fullName: decoded.FullName,
+    email: decoded.email,
   };
 }
 

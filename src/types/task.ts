@@ -8,6 +8,7 @@ export interface Task {
   dueDate: string | null;
   projectId: string;
   assignedToUserId: string | null;
+  assignedToUserName?: string;
   createdAt: string;
   updatedAt: string | null;
   status: TaskStatus;
