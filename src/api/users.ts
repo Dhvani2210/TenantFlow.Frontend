@@ -24,3 +24,11 @@ export async function inviteMember(dto: InviteMemberRequest): Promise<InviteMemb
     const response = await apiClient.post<InviteMemberResponse>("/api/users/invite", dto);
     return response.data;
 }
+
+export async function deleteMember(userId: string): Promise<void> {
+  await apiClient.delete(`/api/users/${userId}`);
+}
+
+export async function changePassword(dto: { currentPassword: string; newPassword: string }): Promise<void> {
+  await apiClient.put("/api/users/change-password", dto);
+}
