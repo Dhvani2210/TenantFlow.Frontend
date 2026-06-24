@@ -15,8 +15,8 @@ interface EditTaskModalProps {
 export default function EditTaskModal({
     task,
     projectId, 
-    onClose, 
-    onTaskUpdated }: EditTaskModalProps)
+    onClose
+     }: EditTaskModalProps)
 {
     const[error, setError] = useState<string | null>(null);
     const[name, setName] = useState(task.name);
@@ -46,7 +46,7 @@ export default function EditTaskModal({
         setError(null);
 
         try {
-           const updatedTask = await updateTask(projectId, task.taskId, 
+            await updateTask(projectId, task.taskId, 
                 {
                 name: name.trim(),
                 description: description.trim() || undefined,

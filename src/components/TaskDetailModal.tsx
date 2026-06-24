@@ -16,8 +16,7 @@ export default function TaskDetailModal({
   task,
   projectId,
   onClose,
-  onEdit,
-  onDeleted,
+  onEdit
 }: TaskDetailModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -38,7 +37,6 @@ export default function TaskDetailModal({
 
     try {
       await deleteTask(projectId, task.taskId);
-      //onDeleted(task.taskId);
       onClose();
     } catch {
       setError("Failed to delete task. Please try again.");

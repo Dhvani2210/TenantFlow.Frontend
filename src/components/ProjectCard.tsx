@@ -10,9 +10,6 @@ interface ProjectCardProps {
 
 export function ProjectCard({ project, canManage, onEdit, onDelete }: ProjectCardProps) {
     const navigate = useNavigate();
-  const handleClick = () => {
-    navigate(`/projects/${project.id}`);
-  };
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">

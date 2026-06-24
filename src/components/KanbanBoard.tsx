@@ -65,7 +65,6 @@ interface ColumnConfig {
 export default function KanbanBoard({
   tasks,
   projectId,
-  onTaskCreated,
   onTaskUpdated,
   onTaskDeleted
 }: KanbanBoardProps) {
@@ -102,8 +101,7 @@ export default function KanbanBoard({
   ];
 
   async function handleSubmit(data: CreateTaskRequest) {
-    const newTask = await createTask(data);
-    //onTaskCreated(newTask);
+      await createTask(data);
   }
 
   async function handleStatusChange(task: Task, newStatus: TaskStatus) {
