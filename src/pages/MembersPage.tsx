@@ -14,7 +14,6 @@ export default function MembersPage() {
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const{user} = useAuth();
 
   const loadMembers = () => {
     setLoading(true);
