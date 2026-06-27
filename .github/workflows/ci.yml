@@ -1,0 +1,43 @@
+# Name shown in the GitHub Actions tab.
+name: Frontend CI
+
+# Same trigger logic as backend: catch problems before merge (pull_request),
+# and confirm main stays healthy after merge (push).
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    # Fresh, clean Linux VM -- destroyed after this run finishes.
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: VM starts empty -- clone our repo's code onto it.
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: install Node.js itself (the runtime Vite/npm run on top of).
+      # Pinned to 22 to match local dev (node -v showed v22.18.0).
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Step 3: install exact dependency versions from package-lock.json.
+      # npm ci (not npm install) -- refuses to drift, deletes node_modules
+      # first, installs precisely what was locked, fails if lockfile missing
+      # or out of sync. Guarantees CI installs the same versions every time,
+      # regardless of what's newer on the npm registry today.
+      - name: Install dependencies
+        run: npm ci
+
+      # Step 4: build. package.json's "build" script is "tsc -b && vite build" --
+      # tsc -b runs FIRST and full-type-checks the project; only if that
+      # succeeds does vite build run to bundle. This single command performs
+      # both type-checking AND bundling, so a type error fails this step
+      # before any bundling happens. No separate "type-check" step needed.
+      - name: Build (includes type-check)
+        run: npm run build
