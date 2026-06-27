@@ -48,4 +48,4 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Build Docker image
-        run: docker build -t tenantflow-frontend:ci -f frontend/Dockerfile frontend
+        run: docker build -t tenantflow-frontend:ci .
