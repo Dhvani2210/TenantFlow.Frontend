@@ -41,3 +41,11 @@ jobs:
       # before any bundling happens. No separate "type-check" step needed.
       - name: Build (includes type-check)
         run: npm run build
+
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Build Docker image
+        run: docker build -t tenantflow-frontend:ci -f frontend/Dockerfile frontend
