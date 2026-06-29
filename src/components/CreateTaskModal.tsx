@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { TaskStatus, CreateTaskRequest } from "../types/task";
 import type { User } from "../types/user";
-import { getUsers } from "../api/users";
+import { getAllUsers } from "../api/users";
 
 interface CreateTaskModalProps {
     projectId: string;
@@ -25,7 +25,7 @@ export default function CreateTaskModal({
     const [error, setError] = useState<string | null>(null);
     
     useEffect(() => {
-        getUsers().then(setUsers).catch(() => {});
+        getAllUsers().then(setUsers).catch(() => {});
     }, []);
 
     async function handleSubmit() {

@@ -1,11 +1,14 @@
 import apiClient from "./axiosInstance";
 import type { Project } from "../types/project";
+import type { PagedResult } from "../types/pagedResult";
 
 // Returns all projects for the current tenant.
 // TenantId is not passed explicitly — the backend reads it from the JWT,
 // which the interceptor is already attaching to every request.
-export const getProjects = (): Promise<Project[]> => {
-  return apiClient.get<Project[]>("/api/Projects").then((res) => res.data);
+export const getProjects = (pageNumber: number, pageSize: number): Promise<PagedResult<Project>> => {
+  return apiClient
+    .get<PagedResult<Project>>("/api/Projects", { params: { pageNumber, pageSize } })
+    .then((res) => res.data);
 };
 
 export const createProject = (dto: { name: string; description: string }): Promise<Project> =>

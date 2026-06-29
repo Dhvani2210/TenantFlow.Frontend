@@ -24,6 +24,7 @@ export interface AuthUser {
 export interface AuthState {
   user: AuthUser | null;   // null means not logged in
   token: string | null;
+  isLoading: boolean;
   login: (token: string) => void;
   logout: () => void;
 }
