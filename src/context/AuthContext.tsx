@@ -12,11 +12,13 @@ type AuthAction =
   interface AuthReducerState {
   user: AuthUser | null;
   token: string | null;
+  isLoading: boolean;
 }
 
 const initialState: AuthReducerState = {
   user: null,
   token: null,
+  isLoading: true,
 };
 
 // The reducer: receives current state + action, returns new state.
@@ -30,11 +32,13 @@ function authReducer(
       return {
         user: action.payload.user,
         token: action.payload.token,
+        isLoading: false 
       };
     case "LOGOUT":
       return {
         user: null,
         token: null,
+        isLoading: false 
       };
     default:
       return state;
@@ -70,6 +74,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (token) {
       const user = decodeToken(token);
       dispatch({ type: "LOGIN", payload: { user, token } });
+    } else {
+      dispatch({ type: "LOGOUT" });
     }
   }, []);
 
