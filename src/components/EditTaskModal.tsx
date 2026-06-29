@@ -2,7 +2,7 @@ import type {Task} from "../types/task";
 import {useEffect, useState} from "react";
 import type { TaskStatus } from "../types/task";
 import type { User } from "../types/user";
-import { getUsers } from "../api/users";
+import { getAllUsers } from "../api/users";
 import { updateTask } from "../api/tasks";
 
 
@@ -32,7 +32,7 @@ export default function EditTaskModal({
         setDescription(task.description ?? "");
         setDueDate(task.dueDate?.split("T")[0] ?? "");
         setAssignedToUserId(task.assignedToUserId ?? "");
-        getUsers().then(setUsers).catch(() => {});
+        getAllUsers().then(setUsers).catch(() => {});
         setStatus(task.status);
     }, [task]);
 
