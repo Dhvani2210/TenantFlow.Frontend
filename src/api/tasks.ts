@@ -1,14 +1,17 @@
 import apiClient from "./axiosInstance";
 import type { CreateTaskRequest, Task, UpdateTaskRequest } from "../types/task";
 import type { PagedResult } from "../types/pagedResult";
+import type { TaskQueryParams } from "../types/TaskQueryParams";
 
-
-export function getTasksByProject(projectId: string) {
-    return apiClient
-        .get<PagedResult<Task>>(`/api/projects/${projectId}/tasks`, {
-            params: { pageSize: 100 }, 
-        })
-        .then((res) => res.data.data);
+export function getTasksByProject(projectId: string, params?: TaskQueryParams) {
+  return apiClient
+    .get<PagedResult<Task>>(`/api/projects/${projectId}/tasks`, {
+      params: {
+        pageSize: 100,
+        ...params,
+      },
+    })
+    .then((res) => res.data.data);
 }
 
 export async function createTask(data : CreateTaskRequest) : Promise<Task>{
