@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import type { Task} from '../types/task';
 
@@ -12,6 +12,11 @@ export function useTaskHub(
     token: string | null,
     options: UseTaskHubOptions
 ): void{
+  
+    // Store latest callbacks in a ref so SignalR always calls the current version
+  // without needing to reconnect when callbacks change
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
 
     useEffect(() => {
   if (!token) return;
@@ -22,11 +27,12 @@ export function useTaskHub(
     .configureLogging(LogLevel.Information)
     .build();
 
-  connection.on("TaskCreated", options.onTaskCreated);
-  connection.on("TaskUpdated", options.onTaskUpdated);
-  connection.on("TaskDeleted", options.onTaskDeleted);
+   // Always call through the ref — guarantees latest callback, never stale
+    connection.on("TaskCreated", (task: Task) => optionsRef.current.onTaskCreated(task));
+    connection.on("TaskUpdated", (task: Task) => optionsRef.current.onTaskUpdated(task));
+    connection.on("TaskDeleted", (taskId: string) => optionsRef.current.onTaskDeleted(taskId));
 
-  connection.start().catch(console.error);
+    connection.start().catch(console.error);
 
   return () => {
     connection.stop();
