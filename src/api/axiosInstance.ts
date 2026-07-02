@@ -3,7 +3,7 @@ import axios from "axios";
 // A single Axios instance shared across the entire app.
 // Every component imports this — never the raw axios object.
 const apiClient = axios.create({
-  baseURL: "http://localhost:5253",
+  baseURL: import.meta.env.VITE_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
