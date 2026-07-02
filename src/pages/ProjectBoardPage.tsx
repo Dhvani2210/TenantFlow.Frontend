@@ -88,7 +88,10 @@ export default function ProjectBoardPage() {
   });
 
   function handleTaskCreated(newTask: Task) {
-    setTasks((prev) => [...prev, newTask]);
+    setTasks((prev) => {
+    if (prev.some((t) => t.taskId === newTask.taskId)) return prev;
+    return [...prev, newTask];
+  });
     setToast({ message: "Task created successfully.", type: "success" });
   }
 
