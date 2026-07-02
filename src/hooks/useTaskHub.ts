@@ -22,7 +22,8 @@ export function useTaskHub(
   if (!token) return;
 
   const connection = new HubConnectionBuilder()
-    .withUrl("http://localhost:5253/hubs/tasks", { accessTokenFactory: () => token })
+    .withUrl(`${import.meta.env.VITE_API_URL}/hubs/tasks`, { 
+     accessTokenFactory: () => token })
     .withAutomaticReconnect()
     .configureLogging(LogLevel.Information)
     .build();
