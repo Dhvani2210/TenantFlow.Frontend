@@ -4,27 +4,81 @@ import apiClient from "../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
+type FormErrors = {
+  email: string;
+  password: string;
+};
+
+const emptyErrors: FormErrors = {
+  email: "",
+  password: "",
+};
+
 export default function LoginPage() {
   const { login, user } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<FormErrors | null>(null);
+  // Server-side / general errors are kept separate from field-level errors,
+  // since they aren't tied to a single input.
+  const [apiError, setApiError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (user !== null) navigate("/dashboard");
   }, [user, navigate]);
 
+  const validateForm = () => {
+    const newErrors: FormErrors = { ...emptyErrors };
+    let valid = true;
+
+    // Email
+    if (!email.trim()) {
+      newErrors.email = "Enter your email address";
+      valid = false;
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
+      newErrors.email = "Enter a valid email address, like you@company.com";
+      valid = false;
+    }
+
+    // Password
+    if (!password) {
+      newErrors.password = "Enter your password";
+      valid = false;
+    }
+
+    setErrors(newErrors);
+
+    return valid;
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    setErrors((prev) => ({ ...(prev ?? emptyErrors), email: "" }));
+    if (apiError) setApiError(null);
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+    setErrors((prev) => ({ ...(prev ?? emptyErrors), password: "" }));
+    if (apiError) setApiError(null);
+  };
+
   const handleLogin = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    setErrors(null);
+    setApiError(null);
     setLoading(true);
-    setError(null);
     try {
       const res = await apiClient.post<{ token: string }>("/api/auth/login", { email, password });
       login(res.data.token);
     } catch {
-      setError("Invalid email or password.");
+      setApiError("Invalid email or password.");
     } finally {
       setLoading(false);
     }
@@ -59,13 +113,13 @@ export default function LoginPage() {
 
           <div className="px-6 py-8 flex flex-col gap-5">
 
-            {/* Error */}
-            {error && (
+            {/* Server-level error */}
+            {apiError && (
               <div className="flex items-center gap-2 px-3 py-2.5 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
                 <svg className="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
+                <p className="text-red-600 dark:text-red-400 text-sm">{apiError}</p>
               </div>
             )}
 
@@ -82,11 +136,16 @@ export default function LoginPage() {
                   type="email"
                   placeholder="you@company.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={handleEmailChange}
                   onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                  className={`${inputClass} pl-10`}
+                  className={`${inputClass} pl-10 ${
+                    errors?.email ? "border-red-500 focus:ring-red-500" : ""
+                  }`}
                 />
               </div>
+              {errors?.email && (
+                <p className="text-xs text-red-500">{errors.email}</p>
+              )}
             </div>
 
             {/* Password */}
@@ -102,9 +161,11 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={handlePasswordChange}
                   onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                  className={`${inputClass} pl-10 pr-10`}
+                  className={`${inputClass} pl-10 pr-10 ${
+                    errors?.password ? "border-red-500 focus:ring-red-500" : ""
+                  }`}
                 />
                 <button
                   type="button"
@@ -123,6 +184,9 @@ export default function LoginPage() {
                   )}
                 </button>
               </div>
+              {errors?.password && (
+                <p className="text-xs text-red-500">{errors.password}</p>
+              )}
             </div>
 
             {/* Sign in button */}
