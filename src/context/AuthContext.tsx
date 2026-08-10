@@ -1,6 +1,7 @@
 import { createContext, useContext, useReducer, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import type { AuthState, AuthUser, DecodedToken } from "../types/auth";
+import apiClient, { setAccessToken, getNewAccessToken } from "../api/axiosInstance";
 
 // The two possible actions that can change auth state.
 type AuthAction =
@@ -24,22 +25,19 @@ const initialState: AuthReducerState = {
 // The reducer: receives current state + action, returns new state.
 // Never mutates — always returns a fresh object.
 function authReducer(
-  state: AuthReducerState,
-  action: AuthAction
-): AuthReducerState {
+  state: AuthReducerState, 
+  action: AuthAction): AuthReducerState {
   switch (action.type) {
     case "LOGIN":
-      return {
-        user: action.payload.user,
-        token: action.payload.token,
-        isLoading: false 
-      };
+      return { 
+        user: action.payload.user, 
+        token: action.payload.token, 
+        isLoading: false };
     case "LOGOUT":
-      return {
-        user: null,
-        token: null,
-        isLoading: false 
-      };
+      return { 
+        user: null, 
+        token: null, 
+        isLoading: false };
     default:
       return state;
   }
@@ -67,26 +65,32 @@ const AuthContext = createContext<AuthState | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // On first load, check if a token already exists in localStorage.
-  // This keeps the user logged in across page refreshes.
+  // On first load: no token in memory yet (page was just refreshed).
+  // Ask the server for a new one using the refreshToken cookie.
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const user = decodeToken(token);
-      dispatch({ type: "LOGIN", payload: { user, token } });
-    } else {
-      dispatch({ type: "LOGOUT" });
-    }
+    getNewAccessToken()
+      .then((token) => {
+        const user = decodeToken(token);
+        dispatch({ type: "LOGIN", payload: { user, token } });
+      })
+      .catch(() => {
+        dispatch({ type: "LOGOUT" });
+      });
   }, []);
 
   const login = (token: string) => {
-    localStorage.setItem("token", token);
+    setAccessToken(token); // tells axios's plain variable
     const user = decodeToken(token);
-    dispatch({ type: "LOGIN", payload: { user, token } });
+    dispatch({ type: "LOGIN", payload: { user, token } }); // tells React's state
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
+  const logout = async () => {
+    try {
+      await apiClient.post("/api/auth/logout");
+    } catch {
+      // ignore — clear local state regardless
+    }
+    setAccessToken(null);
     dispatch({ type: "LOGOUT" });
   };
 
