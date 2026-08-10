@@ -27,6 +27,7 @@ This is the frontend for [TenantFlow](https://github.com/Dhvani2210/TenantFlow) 
 - **Search, filter, sort** — debounced text search, status filter, and due-date sort on the Kanban board; all filter state is URL-persisted via `useSearchParams` so filters survive refresh and URLs are shareable
 - **Pagination** — Projects and Members pages paginate server-side; current page is URL-persisted
 - **Multi-tenant auth** — JWT decoded on login; `TenantId` and `Role` extracted from claims and used throughout the app without extra API calls
+- **Secure token storage** — access token kept in memory only; refresh token in an HttpOnly cookie, never exposed to JavaScript
 - **Role-based UI** — Admin-only controls (invite member, delete member, create project) are conditionally rendered based on the decoded JWT role claim
 - **Dark mode** — full dark mode via Tailwind CSS v4's class strategy, persisted to `localStorage`
 - **Toast notifications** — non-blocking success/error feedback on create, update, and delete operations
@@ -117,6 +118,8 @@ frontend/
 ## Architecture notes
 
 **JWT is decoded client-side on login** using `jwt-decode`. The decoded payload (`TenantId`, `Role`, `FullName`, `email`) is stored in React context via `useReducer` — no separate `/me` API call needed.
+
+**Access token lives in memory, not localStorage** — a plain JS variable, cleared on every page reload. On app load, the app doesn't check for a stored token; it always calls `/api/auth/refresh`, which succeeds silently if the HttpOnly refresh cookie is still valid, or fails gracefully to the login page if not. An axios response interceptor catches `401`s from an expired access token, refreshes it transparently, and retries the original request — the user never sees a broken call mid-session.
 
 **Auth redirect race condition** — `ProtectedRoute` checks `user === null` to decide whether to redirect to `/login`. On hard refresh, the `useEffect` that reads `localStorage` and rehydrates the token runs *after* the first render, so `user` is null on that render even for a logged-in user. Fixed by adding an `isLoading` state to `AuthContext` (initially `true`, flipped to `false` inside the effect) — `ProtectedRoute` waits for `isLoading: false` before checking `user`.
 
