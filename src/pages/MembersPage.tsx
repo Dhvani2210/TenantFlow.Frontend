@@ -136,12 +136,18 @@ export default function MembersPage() {
                       </td>
                       {currentUser?.role === "Admin" && (
                         <td className="px-6 py-4">
-                          <button
-                            onClick={() => setConfirmDelete(member.userId)}
-                            className="text-red-500 hover:text-red-700 text-xs"
-                          >
-                            Remove
-                          </button>
+                           <button
+      onClick={() => setConfirmDelete(member.userId)}
+      disabled={member.userId === currentUser.userId}
+      title={member.userId === currentUser.userId ? "You can't remove yourself" : undefined}
+      className={`text-xs ${
+        member.userId === currentUser.userId
+          ? "text-gray-400 cursor-not-allowed"
+          : "text-red-500 hover:text-red-700"
+      }`}
+    >
+      Remove
+    </button>
                         </td>
                       )}
                     </tr>
