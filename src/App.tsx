@@ -5,6 +5,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import ProjectBoardPage from "./pages/ProjectBoardPage";
 import RegisterPage from "./pages/RegisterPage";
 import MembersPage from "./pages/MembersPage";
+import NotFoundPage from "./pages/NotFoundPage"
 
 export default function App() {
   return (
@@ -36,8 +37,8 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<NotFoundPage />} /> </Routes>
     </BrowserRouter>
   );
 }
